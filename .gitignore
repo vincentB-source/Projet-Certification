@@ -1,6 +1,6 @@
 .venv
 data
-database
-training
 fastapi_db
 fastapi_app
+training/__pycache__
+database/__pycache__
