@@ -15,14 +15,6 @@ from sklearn.metrics import accuracy_score, classification_report
 import os
 import sys
 
-sys.path.insert(0,
-                os.path.abspath(
-                    os.path.join(
-                        os.path.dirname(__file__),
-                        ".."
-                    )
-                ))
-
 #CNN
 def init_model_cnn(X_train, y_train, X_test, y_test, preprocessor):
 
@@ -69,15 +61,15 @@ def init_model_cnn(X_train, y_train, X_test, y_test, preprocessor):
     plt.show()
 
     # On sauvegarde le modèle
-    #model.save("model_cnn.keras")
+    model.save("model_cnn.keras")
     # On sauvegarde le preprocessor
-    #joblib.dump(preprocessor, 'modpreprocessor_cnn.pkl')
+    joblib.dump(preprocessor, 'modpreprocessor_cnn.pkl')
 
     print("Model trained and saved successfully.")
-    #print("Preprocessor saved successfully.")
+    print("Preprocessor saved successfully.")
 
     # On retourne le score
-    return "Model trained successfully with accuracy: %.2f%%" % (scores[1]*100)
+    return "Model CNN trained successfully with accuracy: %.2f%%" % (scores[1]*100)
 
 def init_model_logistic(X_train, y_train, X_test, y_test, preprocessor):
     print("Initializing Logistic Regression model...")
@@ -97,12 +89,12 @@ def init_model_logistic(X_train, y_train, X_test, y_test, preprocessor):
     print(classification_report(y_test, y_pred))
 
     # On sauvegarde le modèle et le preprocessor
-    #joblib.dump(model, 'model_lr.pkl')
-    #joblib.dump(preprocessor, 'preprocessor_lr.pkl')
+    joblib.dump(model, 'model_lr.pkl')
+    joblib.dump(preprocessor, 'preprocessor_lr.pkl')
 
     print("Logistic Regression model trained and saved successfully.")
     
-    return f"Model trained successfully with accuracy: {accuracy * 100:.2f}%"
+    return f"Model Logistic Regression trained successfully with accuracy: {accuracy * 100:.2f}%"
 
 def init_model_random_forest(df):
     import tensorflow_decision_forests as tfdf
@@ -113,3 +105,5 @@ def init_model_random_forest(df):
     model.fit(tf_dataset)
 
     print(model.summary())
+    
+    return "Model Random_Forest trained successfully"
