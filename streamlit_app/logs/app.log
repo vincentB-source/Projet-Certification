@@ -1,0 +1,6 @@
+2025-07-07 15:56:35.708 | INFO     | __main__:<module>:19 - Sent data: Blue
+2025-07-07 15:56:35.708 | INFO     | __main__:<module>:19 - Sent data: Blue
+2025-07-07 15:56:35.708 | INFO     | __main__:<module>:19 - Sent data: Blue
+2025-07-07 15:56:35.769 | ERROR    | __main__:<module>:24 - Error sending data: Blue
+2025-07-07 15:56:35.769 | ERROR    | __main__:<module>:24 - Error sending data: Blue
+2025-07-07 15:56:35.769 | ERROR    | __main__:<module>:24 - Error sending data: Blue

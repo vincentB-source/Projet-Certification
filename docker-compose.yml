@@ -3,19 +3,17 @@ version: '3.8'
 networks:
   my_network:
 
-
 services:
   prometheus:
     image: prom/prometheus:latest
     ports:
       - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     depends_on:
       - fastapi_app
-      - fastapi_db
     networks:
       - my_network
   grafana:
@@ -44,49 +42,24 @@ services:
     build: ./fastapi_app
     container_name: fastapi_app
     ports:
-      - "9000:9000"
-    restart: unless-stopped
-    depends_on:
-      - fastapi_db
-    networks:
-      - my_network
-  fastapi_db:
-    build: ./fastapi_db
-    container_name: fastapi_db
-    ports:
       - "8000:8000"
-    depends_on:
-      - mysql
+    restart: unless-stopped
     networks:
       - my_network
-  mysql:
-    image: mysql:8.3.0
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: vincent
-      MYSQL_DATABASE: M7-brief1
-      MYSQL_USER: vincent
-      MYSQL_PASSWORD: vincent
+  postgres:
+    image: postgres:14-alpine
     ports:
-      - "3306:3306"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
-      - db_data:/var/lib/mysql
-      - ./mysql-config:/etc/mysql/conf.d
-    networks:
-      - my_network
-  phpmyadmin:
-    image: arm64v8/phpmyadmin
-    container_name: phpmyadmin
+      - db_data:/var/lib/postgresql/data
+      - ./postgres-config:/docker-entrypoint-initdb.d
     environment:
-      PMA_HOST: mysql
-      PMA_USER: vincent
-      PMA_PASSWORD: vincent
-      MYSQL_ROOT_PASSWORD: vincent
-    ports:
-      - "8080:80"
-    depends_on:
-      - mysql
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+    container_name: postgresql
     networks:
       - my_network
 volumes:
-  db_data:
+  db_data: 
+

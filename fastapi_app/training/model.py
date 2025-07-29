@@ -5,6 +5,7 @@ from keras.models import Sequential
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 import joblib
 
@@ -107,3 +108,20 @@ def init_model_random_forest(df):
     print(model.summary())
     
     return "Model Random_Forest trained successfully"
+
+def prediction_cnn(data, model_path="model_cnn.keras", preprocessor_path='modpreprocessor_cnn.pkl'):
+    # On charge le modèle
+    model = keras.models.load_model(model_path)
+    # On charge le preprocessor
+    preprocessor = joblib.load(preprocessor_path)
+    # On prédit
+    df = pd.DataFrame(data, index=[0])
+    print("Preprocessing data for prediction...")
+    df = preprocessor.transform(df)
+    # On reshape les données pour une seule entrée
+    df = np.array(df).reshape(1, -1)  # Reshape for a single sample
+    print("Making prediction...")
+    prediction = model.predict(df)
+    print(f"Prediction: {prediction}")
+    # On retourne la classe prédite
+    return np.argmax(prediction, axis=1)[0]  # Return the class index

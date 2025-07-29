@@ -9,9 +9,6 @@ from training.preprocess import preprocessing
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
-
-from training.model import init_model_cnn, init_model_logistic, init_model_random_forest
-
 import os
 import sys
 
