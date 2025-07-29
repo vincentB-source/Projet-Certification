@@ -14,7 +14,7 @@ from starlette.responses import Response
 from typing import Annotated
 import numpy as np
 
-from training.model import init_model_cnn, init_model_logistic, init_model_random_forest, prediction_cnn
+from training.model import init_model_cnn, init_model_logistic, init_model_random_forest, prediction_cnn, training_cnn
 from training.train import prepare_data_before_departure
 from training.trainAfterDeparture import prepare_data_after_departure
 
@@ -30,6 +30,8 @@ sys.path.insert(0,
                 ))
 from database.db import get_db, Data_Csv
 from database.initdbPostgresql import init_db
+
+logger.add("logs/app.log", rotation="1 MB")
 
 app = FastAPI()
 
@@ -95,7 +97,6 @@ class Item(BaseModel):
     day_of_month: int
     day_of_week: int
 
-
 @app.post("/prediction/")
 async def creer_prediction(item: Item) -> dict[str, str]:
     logger.info("Route '/prediction/' (POST) appelée.")
@@ -119,6 +120,47 @@ async def creer_prediction(item: Item) -> dict[str, str]:
     
     result = prediction_cnn(data=data)
     return {"prediction": f"{result}"}
+
+class SavedItem(BaseModel):
+    origin_airport: int
+    dest_airport: int
+    origin_departure_block: int
+    dest_departure_block: int
+    dep_delay: int
+    elapsed_time: int
+    airline_id: int
+    crs_dep_time: int
+    crs_arr_time: int
+    year: int
+    month: int
+    day_of_month: int
+    day_of_week: int
+    arr_del15: int
+
+@app.post("/save_real_data/")
+async def save_real_data(savedItem: SavedItem) -> dict[str, str]:
+    logger.info("Route '/save_real_data/' (POST) appelée.")
+    print(f"Route '/save_real_data/' (POST) appelée avec les données {savedItem}") 
+    # On prépare les données
+    data = {
+        "ORIGIN_AIRPORT_ID": savedItem.origin_airport,
+        "DEST_AIRPORT_ID": savedItem.dest_airport,
+        "DEP_DELAY": savedItem.dep_delay,
+        "CRS_ELAPSED_TIME": savedItem.elapsed_time,
+        #"AIRLINE_ID": savedItem.airline_id,
+        #"CRS_DEP_TIME": savedItem.crs_dep_time,
+        #"CRS_ARR_TIME": savedItem.crs_arr_time,
+        #"YEAR": savedItem.year,
+        #"MONTH": savedItem.month,
+        #"DAY_OF_MONTH": savedItem.day_of_month,
+        #"DAY_OF_WEEK": savedItem.day_of_week,
+        "DEP_TIME_BLK": savedItem.origin_departure_block,
+        "ARR_TIME_BLK": savedItem.dest_departure_block,
+        "ARR_DEL15": savedItem.arr_del15
+    }  
+    
+    result = training_cnn(data=data)
+    return {"training_cnn": f"{result}"}
 
 
 @app.get("/init-data")

@@ -125,3 +125,31 @@ def prediction_cnn(data, model_path="model_cnn.keras", preprocessor_path='modpre
     print(f"Prediction: {prediction}")
     # On retourne la classe prédite
     return np.argmax(prediction, axis=1)[0]  # Return the class index
+
+def training_cnn(data, model_path="model_cnn.keras", preprocessor_path='modpreprocessor_cnn.pkl'):
+    # Charger le modèle et le preprocessor
+
+    model = keras.models.load_model(model_path)
+    preprocessor = joblib.load(preprocessor_path)
+    print("Preprocessing data for training...")
+    # Prétraiter la nouvelle donnée
+    df = pd.DataFrame(data, index=[0])
+
+    # Supposons que la classe cible est incluse dans 'data' sous la clé 'ARR_DEL15'
+    if 'ARR_DEL15' not in data:
+        raise ValueError("La clé 'ARR_DEL15' doit être présente dans les données pour l'entraînement.")
+
+    y_new = np.array([data['ARR_DEL15']])
+    y_new_cat = keras.utils.to_categorical(y_new, num_classes=2)
+
+    df = df.drop(columns=["ARR_DEL15"])
+    X_new = preprocessor.transform(df)
+
+    # Entraîner le modèle sur la nouvelle donnée
+    print("Making training...")
+    model.fit(X_new, y_new_cat, epochs=1, verbose=1)
+
+    # Sauvegarder le modèle mis à jour
+    model.save(model_path)
+
+    return "Model CNN updated successfully with new data."
